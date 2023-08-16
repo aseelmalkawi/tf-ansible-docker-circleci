@@ -291,6 +291,8 @@ provisioner "local-exec" {
       chmod u+x ../scripts/nginx.sh
       chmod u+x ../scripts/nginx-play.sh
       ../scripts/nginx-play.sh ${aws_instance.tf-public-ec2.public_ip} ${aws_instance.tf-private-ec2.private_ip}
+      ansible-playbook -i ../ansible/inventory ../ansible/nginxPlaybook.yml
+      ansible-playbook -i ../ansible/inventory ../ansible/playbook.yml
     EOF
   }
 }
