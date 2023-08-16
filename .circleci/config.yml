@@ -27,9 +27,10 @@ jobs:
             
       - run:
           name: "Run ansible file to deploy the container to ec2"                            # Ansible Section
+          working_directory: ansible
           command: |
-            ansible-playbook -i ../ansible/inventory ../ansible/nginxPlaybook.yml
-            ansible-playbook -i ../ansible/inventory  -e "CIRCLE_BUILD_NUM=$CIRCLE_BUILD_NUM DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME" ../ansible/playbook.yml
+            ansible-playbook -i inventory nginxPlaybook.yml
+            ansible-playbook -i inventory  -e "CIRCLE_BUILD_NUM=$CIRCLE_BUILD_NUM DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME" playbook.yml
 workflows:
   version: 2
   build:
