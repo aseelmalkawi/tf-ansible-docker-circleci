@@ -1,0 +1,37 @@
+version: 2.1
+jobs:
+  clone-git-code:
+    docker:
+      - image: aseelibrahimm/docker-terraform-awscli-ansible:lts                                     # alpine linux image with preinstalled docker, terraform, aws cli   
+    # working_directory: /terraform 
+    steps:
+      - checkout      
+      - setup_remote_docker:
+          version: 20.10.14
+          docker_layer_caching: true
+          
+      - run:
+          name: "Build & Push The Docker Image To Docker Hub"                                # Docker Section
+          command: |
+            docker build -t $DOCKERHUB_USERNAME/coffee-shop:$CIRCLE_BUILD_NUM .              # build docker image with "ghadeer99/coffee-shop:$CIRCLE_BUILD_NUM" tag
+            docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN                   # login to docker hub registry
+            docker push $DOCKERHUB_USERNAME/coffee-shop:$CIRCLE_BUILD_NUM                    # push docker image to docker hub 
+      
+      - run:
+          name: "Run Terraform file to create vpc ec2's and security group"                 # Terraform Section
+          working_directory: terraform
+          command: |
+            terraform init                                                                  # Setup a new terraform project for this file
+            terraform destroy -auto-approve
+            terraform apply -auto-approve
+            
+      - run:
+          name: "Run ansible file to deploy the container to ec2"                            # Ansible Section
+          command: |
+            ansible-playbook -i ../ansible/inventory ../ansible/nginxPlaybook.yml
+            ansible-playbook -i ../ansible/inventory  -e "CIRCLE_BUILD_NUM=$CIRCLE_BUILD_NUM DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME" ../ansible/playbook.yml
+workflows:
+  version: 2
+  build:
+    jobs:
+      - clone-git-code
