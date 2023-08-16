@@ -1,1 +1,1 @@
-#this file will be filled when circleci runs nginx-play.sh
+#this file will be filled when terraform runs nginx-play.sh
