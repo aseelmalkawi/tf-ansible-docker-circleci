@@ -16,13 +16,13 @@
       apt: update_cache=yes name=docker-ce state=latest
     - name: Pull Docker image
       docker_image:
-          name: "aseelibrahimm/nginx80:v2"
+          name: "{{ DOCKERHUB_USERNAME }}/coffee-shop:{{ CIRCLE_BUILD_NUM }}"
           source: pull
     
     - name: Create container
       docker_container:
-        name: "nginx"
-        image: "aseelibrahimm/nginx80:v2"
+        name: "Coffee-Shop-App"
+        image: "{{ DOCKERHUB_USERNAME }}/coffee-shop:{{ CIRCLE_BUILD_NUM }}"
         state: started
         ports:
           - "80:80"
