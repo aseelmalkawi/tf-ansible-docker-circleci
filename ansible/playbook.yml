@@ -1,0 +1,28 @@
+- name: install docker on private ec2
+  hosts: private
+  become: true
+  tasks:
+    - name: Add Docker GPG apt Key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+
+    - name: Update apt and install docker-ce
+      apt: update_cache=yes name=docker-ce state=latest
+    - name: Pull Docker image
+      docker_image:
+          name: "aseelibrahimm/nginx80:v2"
+          source: pull
+    
+    - name: Create container
+      docker_container:
+        name: "nginx"
+        image: "aseelibrahimm/nginx80:v2"
+        state: started
+        ports:
+          - "80:80"
