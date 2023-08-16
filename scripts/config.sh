@@ -1,4 +1,4 @@
-cat <<EOF > $HOME/.ssh/config
+cat <<EOF > ~/.ssh/config
 host bastion
    HostName $1
    User ubuntu
