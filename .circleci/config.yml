@@ -14,7 +14,7 @@ jobs:
           name: "Build & Push The Docker Image To Docker Hub"                                # Docker Section
           command: |
             docker build -t $DOCKERHUB_USERNAME/coffee-shop:$CIRCLE_BUILD_NUM .              # build docker image with "ghadeer99/coffee-shop:$CIRCLE_BUILD_NUM" tag
-            docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_ACCESS_TOKEN                   # login to docker hub registry
+            docker login -u $DOCKERHUB_USERNAME -p $DOCKER_PASSWORD	                         # login to docker hub registry
             docker push $DOCKERHUB_USERNAME/coffee-shop:$CIRCLE_BUILD_NUM                    # push docker image to docker hub 
       
       - run:
