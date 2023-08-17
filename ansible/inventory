@@ -1,1 +1,4 @@
-#this file will be filled when terraform runs inventory.sh
+[private]
+private_instance
+[public]
+bastion
