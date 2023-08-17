@@ -1,7 +1,7 @@
 FROM nginx:stable
 
 #Copy the HTML, CSS, and JavaScript files into the container
-COPY src/ /var/www/html/
+COPY src/ /usr/share/nginx/html
 
 #Expose port 80 for the Nginx server
 EXPOSE 80
