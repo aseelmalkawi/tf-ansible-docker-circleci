@@ -30,26 +30,26 @@ jobs:
             ansible-playbook -i inventory nginxPlaybook.yml
             ansible-playbook -i inventory -e "CIRCLE_BUILD_NUM=$CIRCLE_BUILD_NUM DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME" playbook.yml
 
-  destroy-terraform:
-    docker:
-      - image: aseelibrahimm/docker-terraform-awscli-ansible-ssh:v1 
-    steps:
-      - checkout
-      - run:
-          name: "Destroy terraform resources if approved"                 # Terraform Section
-          working_directory: terraform
-          command: |
-            destroy terraform -auto-approve     
+  # destroy-terraform:
+  #   docker:
+  #     - image: aseelibrahimm/docker-terraform-awscli-ansible-ssh:v1 
+  #   steps:
+  #     - checkout
+  #     - run:
+  #         name: "Destroy terraform resources if approved"                 # Terraform Section
+  #         working_directory: terraform
+  #         command: |
+  #           destroy terraform -auto-approve     
       
 workflows:
   version: 2
   build:
     jobs:
       - clone-git-code
-      - hold:
-          type: approval
-          requires:
-            - clone-git-code
-      - destroy-terraform:
-          requires:
-            - hold
+      # - hold:
+      #     type: approval
+      #     requires:
+      #       - clone-git-code
+      # - destroy-terraform:
+      #     requires:
+      #       - hold
