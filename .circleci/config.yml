@@ -40,7 +40,7 @@ jobs:
           name: "Destroy terraform resources if approved"                 # Terraform Section
           working_directory: terraform
           command: |
-            destroy terraform -auto-approve     
+            terraform destroy -auto-approve     
       
 workflows:
   version: 2
