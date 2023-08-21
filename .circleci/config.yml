@@ -21,8 +21,8 @@ jobs:
           name: "Run Terraform file to create vpc ec2's and security group"                 # Terraform Section
           working_directory: terraform
           command: |
-            terraform destroy -auto-approve
             terraform init                                                                  # Setup a new terraform project for this file
+            terraform destroy -auto-approve
             terraform apply -auto-approve
       - run:
           name: "Run ansible file to deploy the container to ec2"                            # Ansible Section
