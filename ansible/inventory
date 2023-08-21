@@ -1,1 +1,4 @@
-#this will be filled by the inventory.sh script
+[private]
+private_instance
+[public]
+bastion
