@@ -22,7 +22,6 @@ jobs:
           working_directory: terraform
           command: |
             terraform init                                                                  # Setup a new terraform project for this file
-            terraform destroy -auto-approve
             terraform apply -auto-approve
       - run:
           name: "Run ansible file to deploy the container to ec2"                            # Ansible Section
