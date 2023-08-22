@@ -20,6 +20,7 @@ jobs:
             docker push $DOCKERHUB_USERNAME/coffee-shop:$CIRCLE_BUILD_NUM
       - run:
           name: "Plan terraform"
+          working_directory: terraform
           command: |
             terraform plan --var-file=devops.tfvars
             
