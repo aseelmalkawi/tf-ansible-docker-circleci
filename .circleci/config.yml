@@ -21,7 +21,7 @@ jobs:
       - run:
           name: "Plan terraform"
           command: |
-            terraform plan --var-file=devops.tfvars -auto-approve
+            terraform plan --var-file=devops.tfvars
             
   apply-terraform:
     executor: docker-executor
@@ -49,7 +49,7 @@ jobs:
           working_directory: terraform
           command: |
             terraform init
-            terraform destroy -auto-approve     
+            terraform destroy --var-file=devops.tfvars -auto-approve     
       
 workflows:
   version: 2
