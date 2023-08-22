@@ -13,12 +13,6 @@ jobs:
           docker_layer_caching: true
           
       - run:
-          name: "Build & Push The Docker Image To Docker Hub"
-          command: |
-            docker build -t $DOCKERHUB_USERNAME/coffee-shop:$CIRCLE_BUILD_NUM .
-            docker login -u $DOCKERHUB_USERNAME -p $DOCKER_PASSWORD
-            docker push $DOCKERHUB_USERNAME/coffee-shop:$CIRCLE_BUILD_NUM
-      - run:
           name: "Plan terraform"
           working_directory: terraform
           command: |
@@ -35,6 +29,14 @@ jobs:
           command: |
             terraform init
             terraform apply --var-file=devops.tfvars -auto-approve
+            
+      - run:
+          name: "Build & Push The Docker Image To Docker Hub"
+          command: |
+            docker build -t $DOCKERHUB_USERNAME/coffee-shop:$CIRCLE_BUILD_NUM .
+            docker login -u $DOCKERHUB_USERNAME -p $DOCKER_PASSWORD
+            docker push $DOCKERHUB_USERNAME/coffee-shop:$CIRCLE_BUILD_NUM
+            
       - run:
           name: "Run ansible file to deploy the container to ec2"
           working_directory: ansible
