@@ -1,9 +1,11 @@
 version: 2.1
+executors:
+  docker-executor:
+    docker:
+      - image: aseelibrahimm/docker-terraform-awscli-ansible-ssh:v1
 jobs:
   clone-git-code:
-    docker:
-      - image: aseelibrahimm/docker-terraform-awscli-ansible-ssh:v1                          # alpine linux image with preinstalled docker, terraform, aws cli   
-    # working_directory: /terraform 
+    executor: docker-executor
     steps:
       - checkout      
       - setup_remote_docker:
@@ -11,32 +13,39 @@ jobs:
           docker_layer_caching: true
           
       - run:
-          name: "Build & Push The Docker Image To Docker Hub"                                # Docker Section
+          name: "Build & Push The Docker Image To Docker Hub"
           command: |
-            docker build -t $DOCKERHUB_USERNAME/coffee-shop:$CIRCLE_BUILD_NUM .              # build docker image with "ghadeer99/coffee-shop:$CIRCLE_BUILD_NUM" tag
-            docker login -u $DOCKERHUB_USERNAME -p $DOCKER_PASSWORD	                         # login to docker hub registry
-            docker push $DOCKERHUB_USERNAME/coffee-shop:$CIRCLE_BUILD_NUM                    # push docker image to docker hub 
-      
+            docker build -t $DOCKERHUB_USERNAME/coffee-shop:$CIRCLE_BUILD_NUM .
+            docker login -u $DOCKERHUB_USERNAME -p $DOCKER_PASSWORD
+            docker push $DOCKERHUB_USERNAME/coffee-shop:$CIRCLE_BUILD_NUM
       - run:
-          name: "Run Terraform file to create vpc ec2's and security group"                 # Terraform Section
+          name: "Plan terraform"
+          command: |
+            terraform plan --var-file=devops.tfvars -auto-approve
+            
+  apply-terraform:
+    executor: docker-executor
+    steps:
+      - checkout
+      - run:
+          name: "apply terraform if approved"
           working_directory: terraform
           command: |
-            terraform init                                                                  # Setup a new terraform project for this file
+            terraform init
             terraform apply --var-file=devops.tfvars -auto-approve
       - run:
-          name: "Run ansible file to deploy the container to ec2"                            # Ansible Section
+          name: "Run ansible file to deploy the container to ec2"
           working_directory: ansible
           command: |
             ansible-playbook -i inventory nginxPlaybook.yml
             ansible-playbook -i inventory -e "CIRCLE_BUILD_NUM=$CIRCLE_BUILD_NUM DOCKERHUB_USERNAME=$DOCKERHUB_USERNAME" playbook.yml
 
   destroy-terraform:
-    docker:
-      - image: aseelibrahimm/docker-terraform-awscli-ansible-ssh:v1 
+    executor: docker-executor
     steps:
       - checkout
       - run:
-          name: "Destroy terraform resources if approved"                 # Terraform Section
+          name: "Destroy terraform resources if approved"
           working_directory: terraform
           command: |
             terraform init
@@ -51,6 +60,14 @@ workflows:
           type: approval
           requires:
             - clone-git-code
+      - apply-terraform:
+          requires:
+            - hold
+      - hold:
+          type: approval
+          requires:
+            - apply-terraform
       - destroy-terraform:
           requires:
             - hold
+      
