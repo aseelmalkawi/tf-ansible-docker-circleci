@@ -56,18 +56,18 @@ workflows:
   build:
     jobs:
       - clone-git-code
-      - hold:
+      - hold-to-apply:
           type: approval
           requires:
             - clone-git-code
       - apply-terraform:
           requires:
-            - hold
-      - hold:
+            - hold-to-apply
+      - hold-to-destroy:
           type: approval
           requires:
             - apply-terraform
       - destroy-terraform:
           requires:
-            - hold
+            - hold-to-destroy
       
