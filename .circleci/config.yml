@@ -22,6 +22,7 @@ jobs:
           name: "Plan terraform"
           working_directory: terraform
           command: |
+            terraform init
             terraform plan --var-file=devops.tfvars
             
   apply-terraform:
